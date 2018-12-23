@@ -21,13 +21,26 @@ class TestMain(unittest.TestCase):
         data = main.read_data('./data.in')
         self.assertEqual(len(data), 2)
 
-        city1, optimal1 = data[0]
-        city2, optimal2 = data[1]
+        city1 = data[0].cities
+        optimal1 = data[0].optimal
+
+        city2 = data[1].cities
+        optimal2 = data[1].optimal
         
         self.assertEqual(len(city1), 4)
         self.assertEqual(optimal1, 14)
         self.assertEqual(len(city2), 10)
-        self.assertEqual(optimal2, 100)
+        self.assertEqual(optimal2, 35.06889373058871)
+
+    def test_evaluate_solution(self):
+        data = main.read_data('./data.in')
+        evaluation = main.evaluate_solution(data[0].cities, [0,1,2,3])
+        self.assertEqual(evaluation, data[0].optimal)
+
+    def test_generate_2_sorted_random(self):
+        data = main.read_data('./data.in')
+        i, j = main.generate_2_sorted_random(data[0].cities)
+        self.assertTrue(i < j)
 
 if __name__ == '__main__':
     unittest.main()
