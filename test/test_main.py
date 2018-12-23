@@ -42,5 +42,23 @@ class TestMain(unittest.TestCase):
         i, j = main.generate_2_sorted_random(data[0].cities)
         self.assertTrue(i < j)
 
+    def test_inverse_solution(self):
+        data = [7,6,5,4,3,2,1]
+        i, j = 2, 5
+        new_data = main.inverse_solution(data, i, j)
+        self.assertEqual(new_data, [7,6,3,4,5,2,1])
+    
+    def test_insert_solution(self):
+        data = [7,6,5,4,3,2,1]
+        i, j = 2, 5
+        new_data = main.insert_solution(data, i, j)
+        self.assertEqual(new_data, [7,6,4,3,5,2,1])
+
+    def test_swap_solution(self):
+        data = [7,6,5,4,3,2,1]
+        i, j = 2, 5
+        new_data = main.swap_solution(data, i, j)
+        self.assertEqual(new_data, [7,6,2,4,3,5,1])
+
 if __name__ == '__main__':
     unittest.main()
