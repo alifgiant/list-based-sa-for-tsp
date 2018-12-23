@@ -106,7 +106,12 @@ def calculate_bad_result_acceptance_probability(tmax: float, evaluation_new_solu
 def calculate_new_temparature(r_probability: float, old_temparature: float, evaluation_new_solution: float, evaluation_old_solution: float) -> float:
     return (old_temparature - (evaluation_new_solution - evaluation_old_solution)) / math.log(r_probability)
 
-def create_initial_temp(cities: List[City], temparature_list_length: int, initial_acc_probability: float = 0.7) -> List[float]:
+"""
+create initial temparature
+temparature_list_length is how many try we find the initial temp
+initial_acc_probability should be 0..1
+"""
+def create_initial_temp(cities: List[City], temparature_list_length: int, initial_acc_probability: float) -> List[float]:
     solution = list(range(len(cities)))
     temparature_list = list()
 
@@ -123,14 +128,15 @@ def create_initial_temp(cities: List[City], temparature_list_length: int, initia
         t = (- abs(new_evaluation - old_evaluation)) / math.log(initial_acc_probability)
         temparature_list.append(t)
         
-    return max(temparature_list)
+    return temparature_list
 
 
 """
 result should be look like this: [0, 1, 7, 9, 5, 4, 8, 6, 2, 3]
 """
-def run_lbsa(cities: List[City], M: int = 100, K: int = 100, initial_T: float = 100, is_fitness_calculation: bool = True, is_debug: bool = False) -> Tuple[Solution, List[float]]:
-    temparature_list = [initial_T]
+def run_lbsa(cities: List[City], M: int, K: int, temparature_list_length: int, initial_acc_probability: float, is_debug: bool = False) -> Tuple[Solution, List[float]]:
+    temparature_list = create_initial_temp(cities, temparature_list_length, initial_acc_probability)
+    temparature_list = [max(temparature_list)]
     solution = list(range(len(cities)))
     evaluation_result_list = list() # debugging purpose
 
@@ -151,12 +157,10 @@ def run_lbsa(cities: List[City], M: int = 100, K: int = 100, initial_T: float = 
             old_evaluation = evaluate_solution(cities, solution)
             is_new_picked = False
 
-            if is_fitness_calculation and new_evaluation > old_evaluation:
+            if new_evaluation < old_evaluation:
                 solution = new_solution
                 is_new_picked = True
-            elif not is_fitness_calculation and new_evaluation < old_evaluation:
-                solution = new_solution
-                is_new_picked = True
+
             else:
                 p = calculate_bad_result_acceptance_probability(max(temparature_list), new_evaluation, old_evaluation)
                 r = generate_random_probability_r()
@@ -196,7 +200,7 @@ if __name__ == '__main__':
     IS_FITNESS_CALC = False
 
     for test in DATA_SET:
-        solution, result_list = run_lbsa(test.cities, 100, 100, 2, is_fitness_calculation=IS_FITNESS_CALC, is_debug = False)
+        solution, result_list = run_lbsa(test.cities, 100, 100, 30, 0.7, is_debug=False)
         print('solution:', solution, 'distance:', evaluate_solution(test.cities, solution))
 
         if SHOW_VISUAL:
