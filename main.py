@@ -107,17 +107,46 @@ def calculate_new_temparature(r_probability: float, old_temparature: float, eval
 """
 result should be look like this: [0, 1, 7, 9, 5, 4, 8, 6, 2, 3]
 """
-def run_lbsa(testCase: TestCase, M: int = 100, K: int = 100, initial_T: float = 100) -> Solution:
+def run_lbsa(cities: List[City], M: int = 100, K: int = 100, initial_T: float = 100) -> Solution:
     temparature_list = [initial_T]
+    solution = list(range(len(cities)))
+
     k = 0
-    t = 0
-    c = 0
-    m = 0
-    return [0,1,2,3]
+    while k <= K:
+        k += 1
+        t = 0
+        m = 0
+        c = 0
+
+        while m <= M:
+            m += 1
+            new_solution = create_new_solution(cities, solution)
+
+            new_evaluation = evaluate_solution(cities, new_solution)
+            old_evaluation = evaluate_solution(cities, solution)
+
+            if  new_evaluation < old_evaluation:
+                solution = new_solution
+            else:
+                p = calculate_bad_result_acceptance_probability(max(temparature_list), new_evaluation, old_evaluation)
+                r = generate_random_probability_r()
+
+                if r < p:
+                    t = calculate_new_temparature(r, t, new_evaluation, old_evaluation)
+                    temparature_list.append(t)
+                    solution = new_solution
+                    c += 1
+        
+        if c > 0:
+            temparature_list.remove(max(temparature_list))
+            temparature_list.append(t/c)
+
+    return solution
 
 if __name__ == '__main__':
     DATA_FILE = "./data.in"
     DATA_SET = read_data(DATA_FILE)
-    
-    test = DATA_SET[1]
-    # print(run_lbsa(DATA_FILE[0]))
+
+    for test in DATA_SET:
+        solution = run_lbsa(test.cities)
+        print(solution)
