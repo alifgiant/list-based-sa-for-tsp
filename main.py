@@ -152,7 +152,20 @@ def run_lbsa(cities: List[City], M: int = 100, K: int = 100, initial_T: float = 
 if __name__ == '__main__':
     DATA_FILE = "./data.in"
     DATA_SET = read_data(DATA_FILE)
+    SHOW_VISUAL = True
 
     for test in DATA_SET:
         solution = run_lbsa(test.cities, 100, 100, 100)
         print('solution:', solution, 'distance:', evaluate_solution(test.cities, solution, False))
+
+        if SHOW_VISUAL:
+            import matplotlib.pyplot as plt
+            for city in test.cities:
+                plt.plot(city.x, city.y, color='r', marker='o')
+            
+            solution.append(solution[0])
+            x_points = [test.cities[i].x for i in solution]
+            y_points = [test.cities[i].y for i in solution]
+
+            plt.plot(x_points, y_points, linestyle='--', color='b')
+            plt.show()
