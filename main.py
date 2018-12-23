@@ -2,24 +2,10 @@ import matplotlib
 import math
 import os
 import random
-from typing import List, Tuple, Callable
+from typing import List, Callable
 
+from model import *
 
-class City (object):
-    def __init__(self, name: str, x: float, y: float):
-        self.name = name
-        self.x = x
-        self.y = y
-
-    def __repr__(self):
-        return f'name: {self.name}, coordinate: {self.x},{self.y}'
-
-class TestCase (object):
-    def __init__(self, cities: List[City], optimal: float):
-        self.cities = cities
-        self.optimal = optimal
-
-Solution = List[int]
 
 def evaluate_distance(a: City, b : City) -> float:
     return math.sqrt(abs(a.x - b.x)**2 + abs(a.y - b.y)**2)
@@ -49,6 +35,9 @@ def read_data(file_location: str) -> List[TestCase]:
 
 def generate_2_random_index(cities: List[City]) -> int:
     return random.sample(range(len(cities)), 2)
+
+def generate_random_probability_r() -> float:
+    return random.uniform(0, 1)
 
 """
 given 
