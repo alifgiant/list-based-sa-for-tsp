@@ -47,20 +47,39 @@ def read_data(file_location: str) -> List[TestCase]:
         return test_case
     return list()
 
-def generate_2_sorted_random(cities: List[City]) -> int:
-    numbers = random.sample(range(len(cities)), 2)
-    numbers.sort()
-    return numbers
+def generate_2_random_index(cities: List[City]) -> int:
+    return random.sample(range(len(cities)), 2)
 
+"""
+given 
+index [i, j] = [3, 6]
+a list    = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+will return [0, 1, 2, 5, 4, 3, 6, 7, 8, 9]
+"""
 def inverse_solution(old_solution: Solution, i: int, j: int) -> Solution:
+    numbers = [i, j]
+    numbers.sort()
+    i, j = numbers
     return old_solution[:i] + old_solution[i:j][::-1] + old_solution[j:]
 
+"""
+given 
+index [i, j] = [3, 6]
+a list    = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+will return [0, 1, 2, 4, 5, 3, 6, 7, 8, 9]
+"""
 def insert_solution(old_solution: Solution, i: int, j: int) -> Solution:
     new_solution = old_solution[:]
     new_solution.insert(j, new_solution[i])
     new_solution.pop(i)
     return new_solution
 
+"""
+given 
+index [i, j] = [3, 6]
+a list    = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+will return [0, 1, 2, 6, 4, 5, 3, 7, 8, 9]
+"""
 def swap_solution(old_solution: Solution, i: int, j: int) -> Solution:
     new_solution = old_solution[:]
     temp = new_solution[i]
@@ -68,8 +87,12 @@ def swap_solution(old_solution: Solution, i: int, j: int) -> Solution:
     new_solution[j] = temp
     return new_solution
 
-def create_new_solution(cities: List[City], old_solution: Solution) -> Solution:
-    i, j = generate_2_sorted_random(cities)
+def create_new_solution(cities: List[City], old_solution: Solution, i_test: int = -1, j_test: int = -1) -> Solution:
+    # helper for unit test, so number is not random
+    i, j = i_test, j_test 
+
+    if i == -1 or j == -1:
+        i, j = generate_2_random_index(cities)
 
     inverse_opt = inverse_solution(old_solution, i, j)
     insert_opt = insert_solution(old_solution, i, j)
