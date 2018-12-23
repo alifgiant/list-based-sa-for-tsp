@@ -38,7 +38,7 @@ def generate_2_random_index(cities: List[City]) -> int:
     return random.sample(range(len(cities)), 2)
 
 def generate_random_probability_r() -> float:
-    return random.uniform(0, 1)
+    return random.uniform(0.00000001, 1)
 
 """
 given 
@@ -165,10 +165,9 @@ def run_lbsa(cities: List[City], M: int, K: int, temparature_list_length: int, i
                 p = calculate_bad_result_acceptance_probability(max(temparature_list), new_evaluation, old_evaluation)
                 r = generate_random_probability_r()
 
-                if r < p:
+                if r > p:
                     t = calculate_new_temparature(r, t, new_evaluation, old_evaluation)
-                    if t != 0.0:
-                        temparature_list.append(t)
+                    temparature_list.append(t)
                     solution = new_solution
                     is_new_picked = True
                     c += 1                
@@ -185,10 +184,9 @@ def run_lbsa(cities: List[City], M: int, K: int, temparature_list_length: int, i
                 evaluation_result_list.append(old_evaluation)
 
         if c > 0:
-            t = t/c
-            if t != 0.0:
-                temparature_list.remove(max(temparature_list))
-                temparature_list.append(t/c)
+            t = t/c            
+            temparature_list.remove(max(temparature_list))
+            temparature_list.append(t/c)
 
     return solution, evaluation_result_list
 
