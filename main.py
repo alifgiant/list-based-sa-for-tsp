@@ -2,7 +2,7 @@ import matplotlib
 import math
 import os
 import random
-from typing import List, Callable
+from typing import List, Callable, Tuple
 
 from model import *
 
@@ -109,9 +109,10 @@ def calculate_new_temparature(r_probability: float, old_temparature: float, eval
 """
 result should be look like this: [0, 1, 7, 9, 5, 4, 8, 6, 2, 3]
 """
-def run_lbsa(cities: List[City], M: int = 100, K: int = 100, initial_T: float = 100) -> Solution:
+def run_lbsa(cities: List[City], M: int = 100, K: int = 100, initial_T: float = 100, is_fitness_calculation: bool = True, is_debug: bool = False) -> Tuple[Solution, List[float]]:
     temparature_list = [initial_T]
     solution = list(range(len(cities)))
+    evaluation_result_list = list() # debugging purpose
 
     k = 0
     while k <= K:
@@ -123,13 +124,19 @@ def run_lbsa(cities: List[City], M: int = 100, K: int = 100, initial_T: float = 
 
         while m <= M:
             m += 1
+            old_solution = solution
             new_solution = create_new_solution(cities, solution)
 
             new_evaluation = evaluate_solution(cities, new_solution)
             old_evaluation = evaluate_solution(cities, solution)
+            is_new_picked = False
 
-            if  new_evaluation < old_evaluation:
+            if is_fitness_calculation and new_evaluation > old_evaluation:
                 solution = new_solution
+                is_new_picked = True
+            elif not is_fitness_calculation and new_evaluation < old_evaluation:
+                solution = new_solution
+                is_new_picked = True
             else:
                 p = calculate_bad_result_acceptance_probability(max(temparature_list), new_evaluation, old_evaluation)
                 r = generate_random_probability_r()
@@ -139,24 +146,38 @@ def run_lbsa(cities: List[City], M: int = 100, K: int = 100, initial_T: float = 
                     if t != 0.0:
                         temparature_list.append(t)
                     solution = new_solution
-                    c += 1
-        
+                    is_new_picked = True
+                    c += 1                
+            
+            if is_debug:
+                if is_new_picked:
+                    print(m, k, new_solution, new_evaluation)
+                else:
+                    print(m, k, old_solution, old_evaluation)
+
+            if is_new_picked:
+                evaluation_result_list.append(new_evaluation)
+            else:
+                evaluation_result_list.append(old_evaluation)
+
         if c > 0:
             t = t/c
             if t != 0.0:
                 temparature_list.remove(max(temparature_list))
                 temparature_list.append(t/c)
 
-    return solution
+    return solution, evaluation_result_list
 
 if __name__ == '__main__':
     DATA_FILE = "./data.in"
     DATA_SET = read_data(DATA_FILE)
+
     SHOW_VISUAL = True
+    IS_FITNESS_CALC = False
 
     for test in DATA_SET:
-        solution = run_lbsa(test.cities, 100, 100, 100)
-        print('solution:', solution, 'distance:', evaluate_solution(test.cities, solution, False))
+        solution, result_list = run_lbsa(test.cities, 100, 100, 100, is_fitness_calculation=IS_FITNESS_CALC, is_debug = True)
+        print('solution:', solution, 'distance:', evaluate_solution(test.cities, solution, is_fitness_calculation=IS_FITNESS_CALC))
 
         if SHOW_VISUAL:
             import matplotlib.pyplot as plt
@@ -168,4 +189,7 @@ if __name__ == '__main__':
             y_points = [test.cities[i].y for i in solution]
 
             plt.plot(x_points, y_points, linestyle='--', color='b')
-            plt.show()
+            plt.show()  # path visualization
+
+            plt.plot(list(range(len(result_list))), result_list, linestyle='-', color='b')
+            plt.show()  # path visualization
