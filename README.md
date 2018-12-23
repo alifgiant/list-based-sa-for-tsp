@@ -18,6 +18,7 @@ A collage task, repo. Implemetation of a Paper Research.
     - `SHOW_VISUAL` is to let python know if you want to see the visual result
     - `is_debug` is to show the running progress
 3. run `python3 main.py`, see final solution and distance on your terminal
+4. if you change something on the code, dont forget to run the test
 
 ## Result
 ### Map and Track
