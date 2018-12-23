@@ -113,7 +113,7 @@ initial_acc_probability should be 0..1
 """
 def create_initial_temp(cities: List[City], temparature_list_length: int, initial_acc_probability: float) -> List[float]:
     solution = list(range(len(cities)))
-    temparature_list = list()
+    temparature_list = [1]
 
     for _ in range(temparature_list_length):
         old_solution = solution
@@ -151,10 +151,10 @@ def run_lbsa(cities: List[City], M: int, K: int, temparature_list_length: int, i
         while m <= M:
             m += 1
             old_solution = solution
-            new_solution = create_new_solution(cities, solution)
+            new_solution = create_new_solution(cities, old_solution)
 
             new_evaluation = evaluate_solution(cities, new_solution)
-            old_evaluation = evaluate_solution(cities, solution)
+            old_evaluation = evaluate_solution(cities, old_solution)
             is_new_picked = False
 
             if new_evaluation < old_evaluation:
