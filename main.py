@@ -91,7 +91,7 @@ def create_new_solution(cities: List[City], old_solution: Solution, i_test: int 
     swap_opt = swap_solution(old_solution, i, j)
 
     evaluation = [evaluate_solution(cities, inverse_opt), evaluate_solution(cities, insert_opt), evaluate_solution(cities, swap_opt)]
-    index = evaluation.index(min(evaluation))
+    index = evaluation.index(max(evaluation))
 
     if index == 0:
         return inverse_opt
