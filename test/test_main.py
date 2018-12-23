@@ -28,16 +28,13 @@ class TestMain(unittest.TestCase):
         optimal2 = data[1].optimal
         
         self.assertEqual(len(city1), 4)
-        self.assertEqual(optimal1, 14)
+        self.assertEqual(optimal1, -14.0)
         self.assertEqual(len(city2), 10)
-        self.assertEqual(optimal2, 35.06889373058871)
+        self.assertEqual(optimal2, -35.06889373058871)
 
     def test_evaluate_solution(self):
         data = main.read_data('./test/data.in')
         evaluation = main.evaluate_solution(data[0].cities, [0,1,2,3])
-        self.assertEqual(evaluation, -data[0].optimal)
-
-        evaluation = main.evaluate_solution(data[0].cities, [0,1,2,3], False)
         self.assertEqual(evaluation, data[0].optimal)
 
     def test_generate_2_random_index(self):
