@@ -116,7 +116,6 @@ def run_lbsa(cities: List[City], M: int = 100, K: int = 100, initial_T: float = 
     k = 0
     while k <= K:
         # clean temparature list
-        # temparature_list = list(filter(lambda a: a != 0.0, temparature_list))
         k += 1
         t = 0
         m = 0
@@ -155,5 +154,5 @@ if __name__ == '__main__':
     DATA_SET = read_data(DATA_FILE)
 
     for test in DATA_SET:
-        solution = run_lbsa(test.cities, 10, 10, 100)
-        print(solution)
+        solution = run_lbsa(test.cities, 100, 100, 100)
+        print('solution:', solution, 'distance:', evaluate_solution(test.cities, solution, False))
