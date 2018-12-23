@@ -61,6 +61,8 @@ will return [0, 1, 2, 4, 5, 3, 6, 7, 8, 9]
 def insert_solution(old_solution: Solution, i: int, j: int) -> Solution:
     new_solution = old_solution[:]
     new_solution.insert(j, new_solution[i])
+    if j < i:
+        i += 1 # because have inserted, the list is shifted by 1
     new_solution.pop(i)
     return new_solution
 
@@ -86,7 +88,7 @@ def create_new_solution(cities: List[City], old_solution: Solution, i_test: int 
 
     inverse_opt = inverse_solution(old_solution, i, j)
     insert_opt = insert_solution(old_solution, i, j)
-    swap_opt = insert_solution(old_solution, i, j)
+    swap_opt = swap_solution(old_solution, i, j)
 
     evaluation = [evaluate_solution(cities, inverse_opt, False), evaluate_solution(cities, insert_opt, False), evaluate_solution(cities, swap_opt, False)]
     index = evaluation.index(min(evaluation))
