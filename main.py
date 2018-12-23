@@ -14,7 +14,7 @@ def evaluate_solution(cities: List[City], solution: Solution) -> float:
     solution_pair = zip(solution, solution[1:] + solution[:1])
     distances = [evaluate_distance(cities[a], cities[b]) for a, b in solution_pair]
     total = sum(distances)
-    return -total
+    return total
 
 def read_data(file_location: str) -> List[TestCase]:
     if os.path.isfile(file_location):
@@ -91,7 +91,7 @@ def create_new_solution(cities: List[City], old_solution: Solution, i_test: int 
     swap_opt = swap_solution(old_solution, i, j)
 
     evaluation = [evaluate_solution(cities, inverse_opt), evaluate_solution(cities, insert_opt), evaluate_solution(cities, swap_opt)]
-    index = evaluation.index(max(evaluation))
+    index = evaluation.index(min(evaluation))
 
     if index == 0:
         return inverse_opt
@@ -105,6 +105,26 @@ def calculate_bad_result_acceptance_probability(tmax: float, evaluation_new_solu
 
 def calculate_new_temparature(r_probability: float, old_temparature: float, evaluation_new_solution: float, evaluation_old_solution: float) -> float:
     return (old_temparature - (evaluation_new_solution - evaluation_old_solution)) / math.log(r_probability)
+
+def create_initial_temp(cities: List[City], temparature_list_length: int, initial_acc_probability: float = 0.7) -> List[float]:
+    solution = list(range(len(cities)))
+    temparature_list = list()
+
+    for _ in range(temparature_list_length):
+        old_solution = solution
+        new_solution = create_new_solution(cities, solution)
+
+        new_evaluation = evaluate_solution(cities, new_solution)
+        old_evaluation = evaluate_solution(cities, old_solution)
+
+        if new_evaluation < old_evaluation:
+            solution = new_solution
+
+        t = (- abs(new_evaluation - old_evaluation)) / math.log(initial_acc_probability)
+        temparature_list.append(t)
+        
+    return max(temparature_list)
+
 
 """
 result should be look like this: [0, 1, 7, 9, 5, 4, 8, 6, 2, 3]
