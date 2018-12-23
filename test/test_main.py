@@ -18,7 +18,7 @@ class TestMain(unittest.TestCase):
         data = main.read_data('./data.out')
         self.assertFalse(data)
 
-        data = main.read_data('./data.in')
+        data = main.read_data('./test/data.in')
         self.assertEqual(len(data), 2)
 
         city1 = data[0].cities
@@ -33,7 +33,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(optimal2, 35.06889373058871)
 
     def test_evaluate_solution(self):
-        data = main.read_data('./data.in')
+        data = main.read_data('./test/data.in')
         evaluation = main.evaluate_solution(data[0].cities, [0,1,2,3])
         self.assertEqual(evaluation, -data[0].optimal)
 
@@ -41,7 +41,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(evaluation, data[0].optimal)
 
     def test_generate_2_random_index(self):
-        data = main.read_data('./data.in')
+        data = main.read_data('./test/data.in')
         i, j = main.generate_2_random_index(data[0].cities)
         self.assertTrue(i < len(data[0].cities))
         self.assertTrue(j < len(data[0].cities))
@@ -69,7 +69,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(new_data, [7,6,2,4,3,5,1])
 
     def test_create_new_solution(self):
-        data = main.read_data('./data.in')
+        data = main.read_data('./test/data.in')
         cities = data[1].cities
         solution = [0, 1, 7, 9, 5, 4, 8, 6, 2, 3]
         

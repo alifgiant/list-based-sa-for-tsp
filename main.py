@@ -22,12 +22,12 @@ def read_data(file_location: str) -> List[TestCase]:
             test_case_count = int(file.readline())
             test_case = list()
             for _ in range(test_case_count):
-                names = file.readline().split()
+                city_count = int(file.readline())
                 cities = list()
-                for name in names:
+                for count in range(city_count):
                     line = file.readline().split(',')
                     x, y = list(map(lambda x: float(x), line))
-                    cities.append(City(name, x, y))
+                    cities.append(City(str(count), x, y))
                 optimal = float(file.readline())
                 test_case.append(TestCase(cities, optimal))
             
@@ -176,7 +176,7 @@ if __name__ == '__main__':
     IS_FITNESS_CALC = False
 
     for test in DATA_SET:
-        solution, result_list = run_lbsa(test.cities, 100, 100, 100, is_fitness_calculation=IS_FITNESS_CALC, is_debug = True)
+        solution, result_list = run_lbsa(test.cities, 100, 100, 1, is_fitness_calculation=IS_FITNESS_CALC, is_debug = False)
         print('solution:', solution, 'distance:', evaluate_solution(test.cities, solution, is_fitness_calculation=IS_FITNESS_CALC))
 
         if SHOW_VISUAL:
