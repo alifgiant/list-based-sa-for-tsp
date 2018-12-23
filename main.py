@@ -1,6 +1,7 @@
 import matplotlib
 import math
-from typing import List, Tuple
+import os
+from typing import List, Optional, Tuple
 
 class City (object):
     def __init__(self, name: str, x: float, y: float):
@@ -12,24 +13,25 @@ class City (object):
         return f'name: {self.name}, coordinate: {self.x},{self.y}'
 
 def evaluate_distance(a: City, b : City) -> float:
-    return math.sqrt(abs(a.x - b.x) + abs(a.y - b.y))
+    return math.sqrt(abs(a.x - b.x)**2 + abs(a.y - b.y)**2)
 
-def read_data(file_location):
-    with open(file_location) as file: # Use file to refer to the file object
-        test_case_count = int(file.readline())
-        test_case = list()
-        for _ in range(test_case_count):
-            names = file.readline().split()
-            cities = list()
-            for name in names:
-                line = file.readline().split(',')
-                x, y = list(map(lambda x: float(x), line))
-                cities.append(City(name, x, y))
-            optimal = float(file.readline())
-            test_case.append((cities, optimal))
-        
+def read_data(file_location: str) -> List[Tuple[City, float]]:
+    if os.path.isfile(file_location):
+        with open(file_location) as file: # Use file to refer to the file object
+            test_case_count = int(file.readline())
+            test_case = list()
+            for _ in range(test_case_count):
+                names = file.readline().split()
+                cities = list()
+                for name in names:
+                    line = file.readline().split(',')
+                    x, y = list(map(lambda x: float(x), line))
+                    cities.append(City(name, x, y))
+                optimal = float(file.readline())
+                test_case.append((cities, optimal))
+            
         return test_case
-    return None
+    return list()
 
 if __name__ == '__main__':
     DATA_FILE = "./data.in"
