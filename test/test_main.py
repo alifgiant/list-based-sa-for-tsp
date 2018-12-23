@@ -28,9 +28,9 @@ class TestMain(unittest.TestCase):
         optimal2 = data[1].optimal
         
         self.assertEqual(len(city1), 4)
-        self.assertEqual(optimal1, -14.0)
+        self.assertEqual(optimal1, 14.0)
         self.assertEqual(len(city2), 10)
-        self.assertEqual(optimal2, -35.06889373058871)
+        self.assertEqual(optimal2, 35.06889373058871)
 
     def test_evaluate_solution(self):
         data = main.read_data('./test/data.in')
