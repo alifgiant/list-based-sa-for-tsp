@@ -89,8 +89,11 @@ class TestMain(unittest.TestCase):
         self.assertEqual(new_solution, insert_solution)
     
     def test_calculate_bad_result_acceptance_probability(self):
-        probability = main.calculate_bad_result_acceptance_probability(100, 150, 100)
+        probability = main.calculate_bad_result_acceptance_probability(100, 100, 100)
         self.assertEqual(probability, 1)
+
+        probability = main.calculate_bad_result_acceptance_probability(100, -100, -50)
+        self.assertGreaterEqual(probability, 0)
 
 if __name__ == '__main__':
     unittest.main()
