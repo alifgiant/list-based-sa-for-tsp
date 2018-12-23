@@ -35,6 +35,9 @@ class TestMain(unittest.TestCase):
     def test_evaluate_solution(self):
         data = main.read_data('./data.in')
         evaluation = main.evaluate_solution(data[0].cities, [0,1,2,3])
+        self.assertEqual(evaluation, -data[0].optimal)
+
+        evaluation = main.evaluate_solution(data[0].cities, [0,1,2,3], False)
         self.assertEqual(evaluation, data[0].optimal)
 
     def test_generate_2_random_index(self):
@@ -42,6 +45,10 @@ class TestMain(unittest.TestCase):
         i, j = main.generate_2_random_index(data[0].cities)
         self.assertTrue(i < len(data[0].cities))
         self.assertTrue(j < len(data[0].cities))
+
+    def test_generate_random_probability_r(self):        
+        r = main.generate_random_probability_r()
+        self.assertTrue(r <= 1)
 
     def test_inverse_solution(self):
         data = [7,6,5,4,3,2,1]
@@ -80,6 +87,10 @@ class TestMain(unittest.TestCase):
         
         # for i=3, j=7, the best solution is insert
         self.assertEqual(new_solution, insert_solution)
+    
+    def test_calculate_bad_result_acceptance_probability(self):
+        probability = main.calculate_bad_result_acceptance_probability(100, 150, 100)
+        self.assertEqual(probability, 1)
 
 if __name__ == '__main__':
     unittest.main()

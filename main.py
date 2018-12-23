@@ -10,10 +10,11 @@ from model import *
 def evaluate_distance(a: City, b : City) -> float:
     return math.sqrt(abs(a.x - b.x)**2 + abs(a.y - b.y)**2)
 
-def evaluate_solution(cities: List[City], solution: Solution) -> float:
+def evaluate_solution(cities: List[City], solution: Solution, is_fitness_calculation: bool = True) -> float:
     solution_pair = zip(solution, solution[1:] + solution[:1])
     distances = [evaluate_distance(cities[a], cities[b]) for a, b in solution_pair]
-    return sum(distances)
+    total = sum(distances)
+    return total if not is_fitness_calculation else -total
 
 def read_data(file_location: str) -> List[TestCase]:
     if os.path.isfile(file_location):
@@ -96,6 +97,9 @@ def create_new_solution(cities: List[City], old_solution: Solution, i_test: int 
         return insert_opt
     else:
         return swap_opt
+
+def calculate_bad_result_acceptance_probability(tmax: float, evaluation_new_solution: float, evaluation_old_solution: float) -> float:
+    return math.exp(-(evaluation_new_solution - evaluation_old_solution) / tmax)
 
 """
 result should be look like this: [0, 1, 7, 9, 5, 4, 8, 6, 2, 3]
