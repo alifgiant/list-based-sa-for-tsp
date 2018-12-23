@@ -10,11 +10,11 @@ from model import *
 def evaluate_distance(a: City, b : City) -> float:
     return math.sqrt(abs(a.x - b.x)**2 + abs(a.y - b.y)**2)
 
-def evaluate_solution(cities: List[City], solution: Solution, is_fitness_calculation: bool = True) -> float:
+def evaluate_solution(cities: List[City], solution: Solution) -> float:
     solution_pair = zip(solution, solution[1:] + solution[:1])
     distances = [evaluate_distance(cities[a], cities[b]) for a, b in solution_pair]
     total = sum(distances)
-    return total if not is_fitness_calculation else -total
+    return -total
 
 def read_data(file_location: str) -> List[TestCase]:
     if os.path.isfile(file_location):
@@ -90,7 +90,7 @@ def create_new_solution(cities: List[City], old_solution: Solution, i_test: int 
     insert_opt = insert_solution(old_solution, i, j)
     swap_opt = swap_solution(old_solution, i, j)
 
-    evaluation = [evaluate_solution(cities, inverse_opt, False), evaluate_solution(cities, insert_opt, False), evaluate_solution(cities, swap_opt, False)]
+    evaluation = [evaluate_solution(cities, inverse_opt), evaluate_solution(cities, insert_opt), evaluate_solution(cities, swap_opt)]
     index = evaluation.index(min(evaluation))
 
     if index == 0:
@@ -176,8 +176,8 @@ if __name__ == '__main__':
     IS_FITNESS_CALC = False
 
     for test in DATA_SET:
-        solution, result_list = run_lbsa(test.cities, 100, 100, 1, is_fitness_calculation=IS_FITNESS_CALC, is_debug = False)
-        print('solution:', solution, 'distance:', evaluate_solution(test.cities, solution, is_fitness_calculation=IS_FITNESS_CALC))
+        solution, result_list = run_lbsa(test.cities, 100, 100, 2, is_fitness_calculation=IS_FITNESS_CALC, is_debug = False)
+        print('solution:', solution, 'distance:', evaluate_solution(test.cities, solution))
 
         if SHOW_VISUAL:
             import matplotlib.pyplot as plt
