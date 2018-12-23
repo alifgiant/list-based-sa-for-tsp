@@ -95,5 +95,10 @@ class TestMain(unittest.TestCase):
         probability = main.calculate_bad_result_acceptance_probability(100, -100, -50)
         self.assertGreaterEqual(probability, 0)
 
+    def test_calculate_new_temparature(self):
+        old_temarature = 100
+        temparature = main.calculate_new_temparature(2, old_temarature, -100, 50)
+        self.assertGreater(temparature, old_temarature)
+
 if __name__ == '__main__':
     unittest.main()

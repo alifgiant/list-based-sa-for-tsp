@@ -88,7 +88,7 @@ def create_new_solution(cities: List[City], old_solution: Solution, i_test: int 
     insert_opt = insert_solution(old_solution, i, j)
     swap_opt = insert_solution(old_solution, i, j)
 
-    evaluation = [evaluate_solution(cities, inverse_opt), evaluate_solution(cities, insert_opt), evaluate_solution(cities, swap_opt)]
+    evaluation = [evaluate_solution(cities, inverse_opt, False), evaluate_solution(cities, insert_opt, False), evaluate_solution(cities, swap_opt, False)]
     index = evaluation.index(min(evaluation))
 
     if index == 0:
@@ -100,6 +100,9 @@ def create_new_solution(cities: List[City], old_solution: Solution, i_test: int 
 
 def calculate_bad_result_acceptance_probability(tmax: float, evaluation_new_solution: float, evaluation_old_solution: float) -> float:
     return math.exp(-(evaluation_new_solution - evaluation_old_solution) / tmax)
+
+def calculate_new_temparature(r_probability: float, old_temparature: float, evaluation_new_solution: float, evaluation_old_solution: float) -> float:
+    return (old_temparature - (evaluation_new_solution - evaluation_old_solution)) / math.log(r_probability)
 
 """
 result should be look like this: [0, 1, 7, 9, 5, 4, 8, 6, 2, 3]
