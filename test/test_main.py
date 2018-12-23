@@ -97,5 +97,12 @@ class TestMain(unittest.TestCase):
         temparature = main.calculate_new_temparature(2, old_temarature, -100, 50)
         self.assertGreater(temparature, old_temarature)
 
+    def test_create_initial_temp(self):
+        data = main.read_data('./test/data.in')
+        cities = data[1].cities
+        temp_list = main.create_initial_temp(cities, 30, initial_acc_probability=0.7)
+        self.assertEqual(len(temp_list), 30)
+
+
 if __name__ == '__main__':
     unittest.main()
