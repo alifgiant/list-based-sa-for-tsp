@@ -5,6 +5,7 @@ import random
 from typing import List, Callable, Tuple
 
 from model import *
+from config import *
 
 
 def evaluate_distance(a: City, b : City) -> float:
@@ -130,7 +131,6 @@ def create_initial_temp(cities: List[City], temparature_list_length: int, initia
         
     return temparature_list
 
-
 """
 result should be look like this: [0, 1, 7, 9, 5, 4, 8, 6, 2, 3]
 """
@@ -191,16 +191,7 @@ def run_lbsa(cities: List[City], M: int, K: int, temparature_list_length: int, i
     return solution, evaluation_result_list
 
 if __name__ == '__main__':
-    DATA_FILE = "./data.in"
     DATA_SET = read_data(DATA_FILE)
-
-    SHOW_VISUAL = True
-    IS_FITNESS_CALC = False
-    M = 100
-    K = 100
-    T_LENGTH = 30
-    INIT_P = 0.5
-    is_debug=False
 
     for test in DATA_SET:
         solution, result_list = run_lbsa(test.cities, M, K, T_LENGTH, INIT_P, is_debug)
