@@ -67,11 +67,19 @@ class TestMain(unittest.TestCase):
         solution = [0, 1, 7, 9, 5, 4, 8, 6, 2, 3]
         
         i, j = 3, 7
-        # inverse_solution = [0, 1, 7, 9, 5, 4, 8, 6, 2, 3]
-        # insert_solution = [0, 1, 7, 9, 5, 4, 8, 6, 2, 3]
-        # swap_solution = [0, 1, 7, 9, 5, 4, 8, 6, 2, 3]
+        # inverse_solution = main.inverse_solution(solution, i, j)
+        insert_solution = main.insert_solution(solution, i, j)
+        # swap_solution = main.swap_solution(solution, i, j)
 
-        main.create_new_solution(cities, solution)
+        """enable line code if want to see the evalation value"""
+        # evaluation_inverse = main.evaluate_solution(cities, inverse_solution)
+        # evaluation_insert = main.evaluate_solution(cities, insert_solution)
+        # evaluation_swap = main.evaluate_solution(cities, swap_solution)
+
+        new_solution = main.create_new_solution(cities, solution, i, j)
+        
+        # for i=3, j=7, the best solution is insert
+        self.assertEqual(new_solution, insert_solution)
 
 if __name__ == '__main__':
     unittest.main()
