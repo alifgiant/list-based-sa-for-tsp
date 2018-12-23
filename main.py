@@ -113,7 +113,7 @@ initial_acc_probability should be 0..1
 """
 def create_initial_temp(cities: List[City], temparature_list_length: int, initial_acc_probability: float) -> List[float]:
     solution = list(range(len(cities)))
-    temparature_list = [1]
+    temparature_list = [2]
 
     for _ in range(temparature_list_length):
         old_solution = solution
@@ -198,9 +198,14 @@ if __name__ == '__main__':
 
     SHOW_VISUAL = True
     IS_FITNESS_CALC = False
+    M = 100
+    K = 100
+    T_LENGTH = 30
+    INIT_P = 0.5
+    is_debug=False
 
     for test in DATA_SET:
-        solution, result_list = run_lbsa(test.cities, 100, 100, 30, 0.7, is_debug=False)
+        solution, result_list = run_lbsa(test.cities, M, K, T_LENGTH, INIT_P, is_debug)
         print('solution:', solution, 'distance:', evaluate_solution(test.cities, solution))
 
         if SHOW_VISUAL:

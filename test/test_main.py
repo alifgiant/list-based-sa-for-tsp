@@ -101,7 +101,7 @@ class TestMain(unittest.TestCase):
         data = main.read_data('./test/data.in')
         cities = data[1].cities
         temp_list = main.create_initial_temp(cities, 30, initial_acc_probability=0.7)
-        self.assertEqual(len(temp_list), 30)
+        self.assertEqual(len(temp_list), 31)
 
 
 if __name__ == '__main__':
