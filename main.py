@@ -113,6 +113,8 @@ def run_lbsa(cities: List[City], M: int = 100, K: int = 100, initial_T: float = 
 
     k = 0
     while k <= K:
+        # clean temparature list
+        # temparature_list = list(filter(lambda a: a != 0.0, temparature_list))
         k += 1
         t = 0
         m = 0
@@ -133,13 +135,16 @@ def run_lbsa(cities: List[City], M: int = 100, K: int = 100, initial_T: float = 
 
                 if r < p:
                     t = calculate_new_temparature(r, t, new_evaluation, old_evaluation)
-                    temparature_list.append(t)
+                    if t != 0.0:
+                        temparature_list.append(t)
                     solution = new_solution
                     c += 1
         
         if c > 0:
-            temparature_list.remove(max(temparature_list))
-            temparature_list.append(t/c)
+            t = t/c
+            if t != 0.0:
+                temparature_list.remove(max(temparature_list))
+                temparature_list.append(t/c)
 
     return solution
 
@@ -148,5 +153,5 @@ if __name__ == '__main__':
     DATA_SET = read_data(DATA_FILE)
 
     for test in DATA_SET:
-        solution = run_lbsa(test.cities)
+        solution = run_lbsa(test.cities, 10, 10, 100)
         print(solution)
