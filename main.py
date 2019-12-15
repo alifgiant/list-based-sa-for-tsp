@@ -6,40 +6,37 @@ from typing import List, Callable, Tuple
 
 from model import *
 from config import *
+import data
 
 
-def evaluate_distance(a: City, b : City) -> float:
+def evaluate_distance(a: Place, b: Place) -> float:
     return math.sqrt(abs(a.x - b.x)**2 + abs(a.y - b.y)**2)
 
-def evaluate_solution(cities: List[City], solution: Solution) -> float:
+
+def evaluate_solution(places: List[Place], solution: Solution) -> float:
     solution_pair = zip(solution, solution[1:] + solution[:1])
-    distances = [evaluate_distance(cities[a], cities[b]) for a, b in solution_pair]
+    distances = [evaluate_distance(places[a], places[b])
+                 for a, b in solution_pair]
     total = sum(distances)
     return total
 
-def read_data(file_location: str) -> List[TestCase]:
-    if os.path.isfile(file_location):
-        with open(file_location) as file: # Use file to refer to the file object
-            test_case_count = int(file.readline())
-            test_case = list()
-            for _ in range(test_case_count):
-                city_count = int(file.readline())
-                cities = list()
-                for count in range(city_count):
-                    line = file.readline().split(',')
-                    x, y = list(map(lambda x: float(x), line))
-                    cities.append(City(str(count), x, y))
-                optimal = float(file.readline())
-                test_case.append(TestCase(cities, optimal))
-            
-        return test_case
-    return list()
 
-def generate_2_random_index(cities: List[City]) -> int:
+def read_data(location_names: List[str], location_travel: List[int], location_info: List[int]) -> List[TestCase]:
+    places = list()
+    for i in range(len(location_names)):
+        places.append(
+            Place(location_names[i], location_travel[i], location_info[i]))
+
+    return list(places)
+
+
+def generate_2_random_index(cities: List[Place]) -> int:
     return random.sample(range(len(cities)), 2)
+
 
 def generate_random_probability_r() -> float:
     return random.uniform(0.00000001, 1)
+
 
 """
 given 
@@ -47,11 +44,14 @@ index [i, j] = [3, 6]
 a list    = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 will return [0, 1, 2, 5, 4, 3, 6, 7, 8, 9]
 """
+
+
 def inverse_solution(old_solution: Solution, i: int, j: int) -> Solution:
     numbers = [i, j]
     numbers.sort()
     i, j = numbers
     return old_solution[:i] + old_solution[i:j][::-1] + old_solution[j:]
+
 
 """
 given 
@@ -59,13 +59,16 @@ index [i, j] = [3, 6]
 a list    = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 will return [0, 1, 2, 4, 5, 3, 6, 7, 8, 9]
 """
+
+
 def insert_solution(old_solution: Solution, i: int, j: int) -> Solution:
     new_solution = old_solution[:]
     new_solution.insert(j, new_solution[i])
     if j < i:
-        i += 1 # because have inserted, the list is shifted by 1
+        i += 1  # because have inserted, the list is shifted by 1
     new_solution.pop(i)
     return new_solution
+
 
 """
 given 
@@ -73,6 +76,8 @@ index [i, j] = [3, 6]
 a list    = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 will return [0, 1, 2, 6, 4, 5, 3, 7, 8, 9]
 """
+
+
 def swap_solution(old_solution: Solution, i: int, j: int) -> Solution:
     new_solution = old_solution[:]
     temp = new_solution[i]
@@ -80,9 +85,10 @@ def swap_solution(old_solution: Solution, i: int, j: int) -> Solution:
     new_solution[j] = temp
     return new_solution
 
-def create_new_solution(cities: List[City], old_solution: Solution, i_test: int = -1, j_test: int = -1) -> Solution:
+
+def create_new_solution(cities: List[Place], old_solution: Solution, i_test: int = -1, j_test: int = -1) -> Solution:
     # helper for unit test, so number is not random
-    i, j = i_test, j_test 
+    i, j = i_test, j_test
 
     if i == -1 or j == -1:
         i, j = generate_2_random_index(cities)
@@ -91,7 +97,8 @@ def create_new_solution(cities: List[City], old_solution: Solution, i_test: int 
     insert_opt = insert_solution(old_solution, i, j)
     swap_opt = swap_solution(old_solution, i, j)
 
-    evaluation = [evaluate_solution(cities, inverse_opt), evaluate_solution(cities, insert_opt), evaluate_solution(cities, swap_opt)]
+    evaluation = [evaluate_solution(cities, inverse_opt), evaluate_solution(
+        cities, insert_opt), evaluate_solution(cities, swap_opt)]
     index = evaluation.index(min(evaluation))
 
     if index == 0:
@@ -101,18 +108,23 @@ def create_new_solution(cities: List[City], old_solution: Solution, i_test: int 
     else:
         return swap_opt
 
+
 def calculate_bad_result_acceptance_probability(tmax: float, evaluation_new_solution: float, evaluation_old_solution: float) -> float:
     return math.exp(-(evaluation_new_solution - evaluation_old_solution) / tmax)
 
+
 def calculate_new_temparature(r_probability: float, old_temparature: float, evaluation_new_solution: float, evaluation_old_solution: float) -> float:
     return (old_temparature - (evaluation_new_solution - evaluation_old_solution)) / math.log(r_probability)
+
 
 """
 create initial temparature
 temparature_list_length is how many try we find the initial temp
 initial_acc_probability should be 0..1
 """
-def create_initial_temp(cities: List[City], temparature_list_length: int, initial_acc_probability: float) -> List[float]:
+
+
+def create_initial_temp(cities: List[Place], temparature_list_length: int, initial_acc_probability: float) -> List[float]:
     solution = list(range(len(cities)))
     temparature_list = [2]
 
@@ -126,19 +138,24 @@ def create_initial_temp(cities: List[City], temparature_list_length: int, initia
         if new_evaluation < old_evaluation:
             solution = new_solution
 
-        t = (- abs(new_evaluation - old_evaluation)) / math.log(initial_acc_probability)
+        t = (- abs(new_evaluation - old_evaluation)) / \
+            math.log(initial_acc_probability)
         temparature_list.append(t)
-        
+
     return temparature_list
+
 
 """
 result should be look like this: [0, 1, 7, 9, 5, 4, 8, 6, 2, 3]
 """
-def run_lbsa(cities: List[City], M: int, K: int, temparature_list_length: int, initial_acc_probability: float, is_debug: bool = False) -> Tuple[Solution, List[float]]:
-    temparature_list = create_initial_temp(cities, temparature_list_length, initial_acc_probability)
+
+
+def run_lbsa(cities: List[Place], M: int, K: int, temparature_list_length: int, initial_acc_probability: float, is_debug: bool = False) -> Tuple[Solution, List[float]]:
+    temparature_list = create_initial_temp(
+        cities, temparature_list_length, initial_acc_probability)
     temparature_list = [max(temparature_list)]
     solution = list(range(len(cities)))
-    evaluation_result_list = list() # debugging purpose
+    evaluation_result_list = list()  # debugging purpose
 
     k = 0
     while k <= K:
@@ -162,16 +179,18 @@ def run_lbsa(cities: List[City], M: int, K: int, temparature_list_length: int, i
                 is_new_picked = True
 
             else:
-                p = calculate_bad_result_acceptance_probability(max(temparature_list), new_evaluation, old_evaluation)
+                p = calculate_bad_result_acceptance_probability(
+                    max(temparature_list), new_evaluation, old_evaluation)
                 r = generate_random_probability_r()
 
                 if r > p:
-                    t = calculate_new_temparature(r, t, new_evaluation, old_evaluation)
+                    t = calculate_new_temparature(
+                        r, t, new_evaluation, old_evaluation)
                     temparature_list.append(t)
                     solution = new_solution
                     is_new_picked = True
-                    c += 1                
-            
+                    c += 1
+
             if is_debug:
                 if is_new_picked:
                     print(m, k, new_solution, new_evaluation)
@@ -184,30 +203,34 @@ def run_lbsa(cities: List[City], M: int, K: int, temparature_list_length: int, i
                 evaluation_result_list.append(old_evaluation)
 
         if c > 0:
-            t = t/c            
+            t = t/c
             temparature_list.remove(max(temparature_list))
             temparature_list.append(t/c)
 
     return solution, evaluation_result_list
 
+
 if __name__ == '__main__':
-    DATA_SET = read_data(DATA_FILE)
+    DATA_SET = read_data(data.dest_name, data.time_travel, data.info)
 
     for test in DATA_SET:
-        solution, result_list = run_lbsa(test.cities, M, K, T_LENGTH, INIT_P, is_debug)
-        print('solution:', solution, 'distance:', evaluate_solution(test.cities, solution))
+        solution, result_list = run_lbsa(
+            test.cities, M, K, T_LENGTH, INIT_P, is_debug)
+        print('solution:', solution, 'distance:',
+              evaluate_solution(test.cities, solution))
 
-        if SHOW_VISUAL:
-            import matplotlib.pyplot as plt
-            for city in test.cities:
-                plt.plot(city.x, city.y, color='r', marker='o')
-            
-            solution.append(solution[0])
-            x_points = [test.cities[i].x for i in solution]
-            y_points = [test.cities[i].y for i in solution]
+        # if SHOW_VISUAL:
+        #     import matplotlib.pyplot as plt
+        #     for Place in test.cities:
+        #         plt.plot(Place.x, Place.y, color='r', marker='o')
 
-            plt.plot(x_points, y_points, linestyle='--', color='b')
-            plt.show()  # path visualization
+        #     solution.append(solution[0])
+        #     x_points = [test.cities[i].x for i in solution]
+        #     y_points = [test.cities[i].y for i in solution]
 
-            plt.plot(list(range(len(result_list))), result_list, linestyle='-', color='b')
-            plt.show()  # path visualization
+        #     plt.plot(x_points, y_points, linestyle='--', color='b')
+        #     plt.show()  # path visualization
+
+        #     plt.plot(list(range(len(result_list))),
+        #              result_list, linestyle='-', color='b')
+        #     plt.show()  # path visualization

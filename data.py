@@ -1,3 +1,17 @@
+dest_name = [
+    'reddorz natuna',
+    'tangkuban perahu',
+    'maribaya hot spring',
+    'situ cuburuy',
+    'observatorium bosscha',
+    'gua sanghyang tikoro',
+    'stone garden geo park',
+    'air terjun maribaya',
+    'taman begonia',
+    'taman hutan raya irhjuanda',
+    'curug cimahi',
+]
+
 # matriks jarak berdasarkan waktu
 time_travel = [
     [  # tangkuban perahu
@@ -136,7 +150,7 @@ time_travel = [
 
 # tempat destinasi
 # ['tarif', 'rating', 'durasi', 'open_time', 'close_time']
-dest = [
+info = [
     [1, 1, 1, 0, 24],
     [20000, 3.5, 7200, 8, 17],
     [35000, 4, 10800, 8, 10],
@@ -148,17 +162,4 @@ dest = [
     [10000, 4, 10800, 7, 17],
     [11000, 4, 7200, 0, 24],
     [12000, 4, 3600, 0, 24],
-]
-dest_name = [
-    'reddorz natuna',
-    'tangkuban perahu',
-    'maribaya hot spring',
-    'situ cuburuy',
-    'observatorium bosscha',
-    'gua sanghyang tikoro',
-    'stone garden geo park',
-    'air terjun maribaya',
-    'taman begonia',
-    'taman hutan raya irhjuanda',
-    'curug cimahi',
 ]

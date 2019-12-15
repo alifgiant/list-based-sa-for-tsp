@@ -1,17 +1,20 @@
 from typing import List, Callable
 
-class City (object):
-    def __init__(self, name: str, x: float, y: float):
+
+class Place (object):
+    def __init__(self, name: str, travel_time: List[int], info: List[int]):
         self.name = name
-        self.x = x
-        self.y = y
+        self.travel_time = travel_time
+        self.info = info
 
     def __repr__(self):
-        return f'name: {self.name}, coordinate: {self.x},{self.y}'
+        return f'name: {self.name}'
+
 
 class TestCase (object):
-    def __init__(self, cities: List[City], optimal: float):
+    def __init__(self, cities: List[Place], optimal: float):
         self.cities = cities
         self.optimal = optimal
+
 
 Solution = List[int]
