@@ -9,12 +9,12 @@ dest_name = [
     'air terjun maribaya',
     'taman begonia',
     'taman hutan raya irhjuanda',
-    'curug cimahi',
+    'curug cimahi'
 ]
 
 # matriks jarak berdasarkan waktu
 time_travel = [
-    [  # tangkuban perahu
+    [  # reddorz natuna
         0,
         5246,
         2524,
@@ -28,7 +28,7 @@ time_travel = [
         1705,
         3119
     ],
-    [  # maribaya hotspring
+    [  # tangkuban perahu
         5144,
         0,
         2816,
@@ -41,7 +41,7 @@ time_travel = [
         4185,
         3926,
     ],
-    [  # situ ciburuy
+    [  # maribaya hot spring
         2732,
         2812,
         0,
@@ -53,6 +53,19 @@ time_travel = [
         633,
         1774,
         2558,
+    ],
+    [  # situ cuburuy
+        2886,
+        6395,
+        4367,
+        0,
+        4109,
+        3025,
+        1320,
+        4444,
+        4186,
+        3351,
+        2565,
     ],
     [  # observatorium bosscha
         2936,

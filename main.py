@@ -3,14 +3,21 @@ import math
 import os
 import random
 from typing import List, Callable, Tuple
-
 from model import *
-from config import *
+from config import M, K, INIT_P, T_LENGTH, SHOW_VISUAL, is_debug
 import data
 
 
 def evaluate_distance(a: Place, b: Place) -> float:
-    return math.sqrt(abs(a.x - b.x)**2 + abs(a.y - b.y)**2)
+    dest_index = data.dest_name.index(b.name)
+    time = a.travel_time[dest_index] / 9999
+    tarif = a.info[0] / 99999
+    rating = (a.info[1] / 5) * -1
+    return abs((time + tarif + rating) * 1000)
+
+
+def is_solution_valid(places: List[Place]) -> bool:
+    return True
 
 
 def evaluate_solution(places: List[Place], solution: Solution) -> float:
@@ -27,11 +34,11 @@ def read_data(location_names: List[str], location_travel: List[int], location_in
         places.append(
             Place(location_names[i], location_travel[i], location_info[i]))
 
-    return list(places)
+    return [TestCase(places, 1)]
 
 
-def generate_2_random_index(cities: List[Place]) -> int:
-    return random.sample(range(len(cities)), 2)
+def generate_2_random_index(places: List[Place]) -> int:
+    return random.sample(range(1,len(places)), 2)
 
 
 def generate_random_probability_r() -> float:
@@ -46,7 +53,9 @@ will return [0, 1, 2, 5, 4, 3, 6, 7, 8, 9]
 """
 
 
-def inverse_solution(old_solution: Solution, i: int, j: int) -> Solution:
+def inverse_solution(old_solution: Solution, places: List[Place], i: int = -1, j: int = -1) -> Solution:
+    if i == -1 or j == -1:
+        i, j = generate_2_random_index(places)
     numbers = [i, j]
     numbers.sort()
     i, j = numbers
@@ -61,7 +70,10 @@ will return [0, 1, 2, 4, 5, 3, 6, 7, 8, 9]
 """
 
 
-def insert_solution(old_solution: Solution, i: int, j: int) -> Solution:
+def insert_solution(old_solution: Solution, places: List[Place], i: int = -1, j: int = -1) -> Solution:
+    if i == -1 or j == -1:
+        i, j = generate_2_random_index(places)
+
     new_solution = old_solution[:]
     new_solution.insert(j, new_solution[i])
     if j < i:
@@ -78,7 +90,10 @@ will return [0, 1, 2, 6, 4, 5, 3, 7, 8, 9]
 """
 
 
-def swap_solution(old_solution: Solution, i: int, j: int) -> Solution:
+def swap_solution(old_solution: Solution, places: List[Place], i: int = -1, j: int = -1) -> Solution:
+    if i == -1 or j == -1:
+        i, j = generate_2_random_index(places)
+
     new_solution = old_solution[:]
     temp = new_solution[i]
     new_solution[i] = new_solution[j]
@@ -86,19 +101,24 @@ def swap_solution(old_solution: Solution, i: int, j: int) -> Solution:
     return new_solution
 
 
-def create_new_solution(cities: List[Place], old_solution: Solution, i_test: int = -1, j_test: int = -1) -> Solution:
-    # helper for unit test, so number is not random
-    i, j = i_test, j_test
+def create_new_solution(places: List[Place], old_solution: Solution) -> Solution:
+    inverse_opt = inverse_solution(old_solution, places)
+    while not is_solution_valid(inverse_opt):
+        inverse_opt = inverse_solution(old_solution, places)
 
-    if i == -1 or j == -1:
-        i, j = generate_2_random_index(cities)
+    insert_opt = insert_solution(old_solution, places)
+    while not is_solution_valid(insert_opt):
+        insert_opt = insert_solution(old_solution, places)
 
-    inverse_opt = inverse_solution(old_solution, i, j)
-    insert_opt = insert_solution(old_solution, i, j)
-    swap_opt = swap_solution(old_solution, i, j)
+    swap_opt = swap_solution(old_solution, places)
+    while not is_solution_valid(swap_opt):
+        swap_opt = swap_solution(old_solution, places)
 
-    evaluation = [evaluate_solution(cities, inverse_opt), evaluate_solution(
-        cities, insert_opt), evaluate_solution(cities, swap_opt)]
+    evaluation = [
+        evaluate_solution(places, inverse_opt),
+        evaluate_solution(places, insert_opt),
+        evaluate_solution(places, swap_opt)
+    ]
     index = evaluation.index(min(evaluation))
 
     if index == 0:
@@ -124,16 +144,16 @@ initial_acc_probability should be 0..1
 """
 
 
-def create_initial_temp(cities: List[Place], temparature_list_length: int, initial_acc_probability: float) -> List[float]:
-    solution = list(range(len(cities)))
+def create_initial_temp(places: List[Place], temparature_list_length: int, initial_acc_probability: float) -> List[float]:
+    solution = list(range(len(places)))
     temparature_list = [2]
 
     for _ in range(temparature_list_length):
         old_solution = solution
-        new_solution = create_new_solution(cities, solution)
+        new_solution = create_new_solution(places, solution)
 
-        new_evaluation = evaluate_solution(cities, new_solution)
-        old_evaluation = evaluate_solution(cities, old_solution)
+        new_evaluation = evaluate_solution(places, new_solution)
+        old_evaluation = evaluate_solution(places, old_solution)
 
         if new_evaluation < old_evaluation:
             solution = new_solution
@@ -150,11 +170,11 @@ result should be look like this: [0, 1, 7, 9, 5, 4, 8, 6, 2, 3]
 """
 
 
-def run_lbsa(cities: List[Place], M: int, K: int, temparature_list_length: int, initial_acc_probability: float, is_debug: bool = False) -> Tuple[Solution, List[float]]:
+def run_lbsa(places: List[Place], M: int, K: int, temparature_list_length: int, initial_acc_probability: float, is_debug: bool = False) -> Tuple[Solution, List[float]]:
     temparature_list = create_initial_temp(
-        cities, temparature_list_length, initial_acc_probability)
+        places, temparature_list_length, initial_acc_probability)
     temparature_list = [max(temparature_list)]
-    solution = list(range(len(cities)))
+    solution = list(range(len(places)))
     evaluation_result_list = list()  # debugging purpose
 
     k = 0
@@ -168,10 +188,10 @@ def run_lbsa(cities: List[Place], M: int, K: int, temparature_list_length: int, 
         while m <= M:
             m += 1
             old_solution = solution
-            new_solution = create_new_solution(cities, old_solution)
+            new_solution = create_new_solution(places, old_solution)
 
-            new_evaluation = evaluate_solution(cities, new_solution)
-            old_evaluation = evaluate_solution(cities, old_solution)
+            new_evaluation = evaluate_solution(places, new_solution)
+            old_evaluation = evaluate_solution(places, old_solution)
             is_new_picked = False
 
             if new_evaluation < old_evaluation:
@@ -215,22 +235,22 @@ if __name__ == '__main__':
 
     for test in DATA_SET:
         solution, result_list = run_lbsa(
-            test.cities, M, K, T_LENGTH, INIT_P, is_debug)
-        print('solution:', solution, 'distance:',
-              evaluate_solution(test.cities, solution))
+            test.places, M, K, T_LENGTH, INIT_P, is_debug)
+        print('solution:', solution, 'fitness:',
+              evaluate_solution(test.places, solution))
 
-        # if SHOW_VISUAL:
-        #     import matplotlib.pyplot as plt
-        #     for Place in test.cities:
-        #         plt.plot(Place.x, Place.y, color='r', marker='o')
+        if SHOW_VISUAL:
+            import matplotlib.pyplot as plt
+            # for Place in test.places:
+            #     plt.plot(Place.x, Place.y, color='r', marker='o')
 
-        #     solution.append(solution[0])
-        #     x_points = [test.cities[i].x for i in solution]
-        #     y_points = [test.cities[i].y for i in solution]
+            # solution.append(solution[0])
+            # x_points = [test.places[i].x for i in solution]
+            # y_points = [test.places[i].y for i in solution]
 
-        #     plt.plot(x_points, y_points, linestyle='--', color='b')
-        #     plt.show()  # path visualization
+            # plt.plot(x_points, y_points, linestyle='--', color='b')
+            # plt.show()  # path visualization
 
-        #     plt.plot(list(range(len(result_list))),
-        #              result_list, linestyle='-', color='b')
-        #     plt.show()  # path visualization
+            plt.plot(list(range(len(result_list))),
+                     result_list, linestyle='-', color='b')
+            plt.show()  # graph visualization

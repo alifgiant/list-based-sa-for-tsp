@@ -13,7 +13,7 @@ class Place (object):
 
 class TestCase (object):
     def __init__(self, cities: List[Place], optimal: float):
-        self.cities = cities
+        self.places = cities
         self.optimal = optimal
 
 
